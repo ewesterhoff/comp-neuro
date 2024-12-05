@@ -376,7 +376,7 @@ if __name__ == "__main__":
         data = []
 
     # Iterate over all parameter combinations and iterations
-    for _, e_prop, density, graph_type, ii_conn in product(iterations, e_props, densities, graph_types, ii_connectivities):
+    for _, e_prop, density, graph_type, ii_conn in product(iterations, e_props[::-1], densities[::-1], graph_types, ii_connectivities):        # Train the network and store the results
         # Train the network and store the results
         params = {
             'e_prop': e_prop,
