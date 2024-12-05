@@ -372,5 +372,5 @@ if __name__ == "__main__":
         results[(e_prop, density, graph_type, ii_conn, iteration)] = res
 
         # Save results as a pickle file
-        with open('training_results.pkl', 'wb') as f:
+        with open('PDMa_training_results.pkl', 'wb') as f:
             pickle.dump(results, f)
