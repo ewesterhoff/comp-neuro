@@ -349,6 +349,7 @@ e_props = [0, 0.5, 1]
 densities = [0, 0.5, 1]
 graph_types = ['er', 'ws']
 ii_connections = [0, 1]
+iters = 1
 
 all_data = {}
 
@@ -356,23 +357,24 @@ for i, e_prop in enumerate(e_props):
     for j, density in enumerate(densities):
         for k, graph_type in enumerate(graph_types):
             for m, ii_connect in enumerate(ii_connections):
-                print(f"Running for e_prop={e_prop:.2f}, density={density:.2f}...")
+                for iter in iters:
+                    print(f"Running for e_prop={e_prop:.2f}, density={density:.2f}...")
 
-                # Perform a single run
-                results = do_run(
-                    e_prop=e_prop,
-                    density=density,
-                    graph_type=graph_type,
-                    ii_connectivity=ii_connect,
-                    dim_ring=13,
-                    hidden_size=100,
-                    training_steps=1000,
-                    accuracy_trials=500
-                )
+                    # Perform a single run
+                    results = do_run(
+                        e_prop=e_prop,
+                        density=density,
+                        graph_type=graph_type,
+                        ii_connectivity=ii_connect,
+                        dim_ring=13,
+                        hidden_size=100,
+                        training_steps=1000,
+                        accuracy_trials=500
+                    )
 
-                # Save results to the dictionary
-                key = f"eprop_{i}_density_{j}_graph_{graph_type}_ii_con_{ii_connect}"
-                all_data[key] = results
+                    # Save results to the dictionary
+                    key = f"eprop_{i}_density_{j}_graph_{graph_type}_ii_con_{ii_connect}_iter_{iter}"
+                    all_data[key] = results
 
 # Save all data to a single .mat file
 savemat("grid_search_results.mat", all_data)
