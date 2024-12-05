@@ -286,7 +286,9 @@ def do_run(e_prop=0.8, density = 1, graph_type = 'er',
     num_trial = accuracy_trials
     activity_dict = {}
     trial_infos = {}
-    stim_activity = [[], []]  # response for ground-truth 0 and 1
+    stim_activity = []
+    for _ in range(dim_ring):
+        stim_activity.append([])
     for i in range(num_trial):
         env.new_trial()
         ob, gt = env.ob, env.gt
