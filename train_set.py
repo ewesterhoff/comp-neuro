@@ -115,7 +115,8 @@ class EIRecLinear(nn.Module):
     def reset_parameters(self):
         init.kaiming_uniform_(self.weight, a=math.sqrt(5))
         # Scale E weight by E-I ratio
-        self.weight.data[:, :self.e_size] /= (self.e_size/self.i_size)
+        if self.i_size != 0:
+            self.weight.data[:, :self.e_size] /= (self.e_size/self.i_size)
         if self.bias is not None:
             fan_in, _ = init._calculate_fan_in_and_fan_out(self.weight)
             bound = 1 / math.sqrt(fan_in)
@@ -357,7 +358,7 @@ for i, e_prop in enumerate(e_props):
     for j, density in enumerate(densities):
         for k, graph_type in enumerate(graph_types):
             for m, ii_connect in enumerate(ii_connections):
-                for iter in iters:
+                for iter in range(iters):
                     print(f"Running for e_prop={e_prop:.2f}, density={density:.2f}...")
 
                     # Perform a single run
