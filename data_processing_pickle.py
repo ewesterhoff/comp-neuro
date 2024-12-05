@@ -1,11 +1,15 @@
+import os
 import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
 # Load the data
-pickle_file = 'PDMa_training_results.pkl'
-figname = 'PDMa_results'
+task = 'PDMa'
+pickle_file = f'{task}_training_results.pkl'
+figname = f'results/{task}_results'
+
+os.makedirs('results', exist_ok=True)
 
 with open(pickle_file, 'rb') as f:
     data = pickle.load(f)
