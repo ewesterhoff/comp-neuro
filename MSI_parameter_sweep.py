@@ -1,3 +1,4 @@
+import os
 import neurogym as ngym
 import torch
 import torch.nn as nn
@@ -364,14 +365,27 @@ if __name__ == "__main__":
     iterations = range(7)
 
     # Nested dictionary to store results
-    results = {}
+    pickle_file = 'MSI_training_results.pkl'
+
+    # Check if the file exists
+    if os.path.exists(pickle_file):
+        with open(pickle_file, 'rb') as f:
+            data = pickle.load(f)
+    else:
+        data = []
 
     # Iterate over all parameter combinations and iterations
-    for e_prop, density, graph_type, ii_conn, iteration in product(e_props, densities, graph_types, ii_connectivities, iterations):
+    for _, e_prop, density, graph_type, ii_conn in product(iterations, e_props, densities, graph_types, ii_connectivities):
         # Train the network and store the results
-        res = train_network(e_prop, density, graph_type, ii_conn)
-        results[(e_prop, density, graph_type, ii_conn, iteration)] = res
+        params = {
+            'e_prop': e_prop,
+            'density': density,
+            'graph_type': graph_type,
+            'ii_conn': ii_conn,
+        }
+        results = train_network(e_prop, density, graph_type, ii_conn)
+        data.append((params, results))
 
-        # Save results as a pickle file
-        with open('MSI_training_results.pkl', 'wb') as f:
-            pickle.dump(results, f)
+        # Save data as a pickle file
+        with open(pickle_file, 'wb') as f:
+            pickle.dump(data, f)
