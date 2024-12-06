@@ -230,7 +230,7 @@ class Net(nn.Module):
 
 
 # Instantiate the network and print information
-def initialize_train_network(e_prop, density, dim_ring, graph_type, ii_connectivity):
+def initialize_train_network(task_type, e_prop, density, dim_ring, hidden_size, graph_type, ii_connectivity):
 
     # Environment
     if task_type == 'PDMa':
@@ -270,7 +270,6 @@ def initialize_train_network(e_prop, density, dim_ring, graph_type, ii_connectiv
     input_size = env.observation_space.shape[0]
     output_size = env.action_space.n
 
-    hidden_size = 100
     net = Net(input_size=input_size, hidden_size=hidden_size,
             output_size=output_size, dt=env.dt, sigma_rec=0.15,
             e_prop=e_prop, density=density, graph_type=graph_type, ii_connectivity=ii_connectivity)
@@ -299,7 +298,7 @@ def initialize_train_network(e_prop, density, dim_ring, graph_type, ii_connectiv
         running_loss += loss.item()
         if i % print_step == (print_step - 1):
             running_loss /= print_step
-            print('Step {}, Loss {:0.4f}'.format(i+1, running_loss))
+            # print('Step {}, Loss {:0.4f}'.format(i+1, running_loss))
             running_loss = 0
 
     env.reset(no_step=True)
@@ -375,6 +374,7 @@ if __name__ == "__main__":
     e_props = [0.01, 0.25, 0.5, 0.8, 1]
     densities = [0.01, 0.05, 0.1, 0.5, 1]
     dim_rings = [2, 4, 8, 16]
+    hidden_sizes = [25, 50, 75, 100]
     graph_types = ['er', 'ws']
     ii_connectivities = [0, 1]
     iterations = range(7)
@@ -391,17 +391,18 @@ if __name__ == "__main__":
         data = []
 
     # Iterate over all parameter combinations and iterations
-    for _, e_prop, density, dim_ring, graph_type, ii_conn in product(iterations, e_props[::-1], densities[::-1], dim_rings, graph_types, ii_connectivities):        # Train the network and store the results
+    for _, e_prop, density, dim_ring, hidden_size, graph_type, ii_conn in product(iterations, e_props, densities, dim_rings, hidden_sizes, graph_types, ii_connectivities):        # Train the network and store the results
         # Train the network and store the results
         params = {
             'e_prop': e_prop,
             'density': density,
             'dim_ring': dim_ring,
+            'hidden_size': hidden_size,
             'graph_type': graph_type,
             'ii_conn': ii_conn,
         }
         print(params)
-        results = initialize_train_network(task_type, e_prop, density, dim_ring, graph_type, ii_conn)
+        results = initialize_train_network(task_type, e_prop, density, hidden_size, dim_ring, graph_type, ii_conn)
         data.append((params, results))
 
         # Save data as a pickle file
