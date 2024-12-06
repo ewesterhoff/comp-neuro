@@ -31,7 +31,7 @@ dataset = ngym.Dataset(task, env_kwargs=kwargs, batch_size=16,
 # A sample environment from dataset
 env = dataset.env
 # Visualize the environment with 2 sample trials
-_ = ngym.utils.plot_env(env, num_trials=2)
+# _ = ngym.utils.plot_env(env, num_trials=2)
 
 # Network input and output size
 input_size = env.observation_space.shape[0]
@@ -283,7 +283,7 @@ def train_network(e_prop, density, graph_type, ii_connectivity):
         running_loss += loss.item()
         if i % print_step == (print_step - 1):
             running_loss /= print_step
-            # print('Step {}, Loss {:0.4f}'.format(i+1, running_loss))
+            print('Step {}, Loss {:0.4f}'.format(i+1, running_loss))
             running_loss = 0
 
     env.reset(no_step=True)
@@ -364,7 +364,8 @@ if __name__ == "__main__":
     iterations = range(7)
 
     # Nested dictionary to store results
-    pickle_file = 'PDMa_training_results.pkl'
+    pickle_file = 'data/PDMa_training_results.pkl'
+    os.makedirs('data', exist_ok=True)
 
     # Check if the file exists
     if os.path.exists(pickle_file):
@@ -382,6 +383,7 @@ if __name__ == "__main__":
             'graph_type': graph_type,
             'ii_conn': ii_conn,
         }
+        print(params)
         results = train_network(e_prop, density, graph_type, ii_conn)
         data.append((params, results))
 
