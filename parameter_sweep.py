@@ -1,5 +1,6 @@
 import os
 import neurogym as ngym
+from neurogym.wrappers.reaction_time import ReactionTime
 import torch
 import torch.nn as nn
 from torch.nn import init
@@ -12,30 +13,6 @@ import numpy as np
 import pickle
 import pandas as pd
 from itertools import product
-
-
-# Environment
-task = 'PerceptualDecisionMaking-v0'
-timing = {'fixation': ('choice', (50,100,200,400)),
-          'stimulus': ('choice', (100,200,400,800)),
-         }
-dim_ring = 13
-
-kwargs = {'dt': 20, 'timing': timing, 'dim_ring': dim_ring}
-seq_len = 100
-
-# Make supervised dataset
-dataset = ngym.Dataset(task, env_kwargs=kwargs, batch_size=16,
-                       seq_len=seq_len)
-
-# A sample environment from dataset
-env = dataset.env
-# Visualize the environment with 2 sample trials
-# _ = ngym.utils.plot_env(env, num_trials=2)
-
-# Network input and output size
-input_size = env.observation_space.shape[0]
-output_size = env.action_space.n
 
 
 class PosWLinear(nn.Module):
@@ -253,7 +230,46 @@ class Net(nn.Module):
 
 
 # Instantiate the network and print information
-def train_network(e_prop, density, graph_type, ii_connectivity):
+def initialize_train_network(e_prop, density, dim_ring, graph_type, ii_connectivity):
+
+    # Environment
+    if task_type == 'PDMa':
+        task = 'PerceptualDecisionMaking-v0'
+        timing = {'fixation': ('choice', (50,100,200,400)),
+            'stimulus': ('choice', (100,200,400,800)),
+            }
+    if task_type == 'PDMb':
+        task = 'PerceptualDecisionMaking-v0'
+        timing = {'fixation': ('choice', (50,100,200,400)),
+            'stimulus': ('choice', (100,200,400,800)),
+            }
+    if task_type == 'MSI':
+        task = 'MultiSensoryIntegration-v0'
+        timing = {'fixation': ('choice', (50,100,200,400)),
+            'stimulus': ('choice', (100,200,400,800)),
+            'decision': ('choice', (50,75,100,125)),
+            }
+
+    
+
+    kwargs = {'dt': 20, 'timing': timing, 'dim_ring': dim_ring}
+    seq_len = 100
+
+    # Make supervised dataset
+    dataset = ngym.Dataset(task, env_kwargs=kwargs, batch_size=16,
+                        seq_len=seq_len)
+
+    # A sample environment from dataset
+    env = dataset.env
+    if task_type == 'PDMb':
+        env = ReactionTime(env)
+    # Visualize the environment with 2 sample trials
+    # _ = ngym.utils.plot_env(env, num_trials=2)
+
+    # Network input and output size
+    input_size = env.observation_space.shape[0]
+    output_size = env.action_space.n
+
     hidden_size = 100
     net = Net(input_size=input_size, hidden_size=hidden_size,
             output_size=output_size, dt=env.dt, sigma_rec=0.15,
@@ -354,17 +370,17 @@ def train_network(e_prop, density, graph_type, ii_connectivity):
 
 if __name__ == "__main__":
 
-    # res = train_network(1, 1, 'ws', 0)
-    # print(res)
+    task_type = 'MSI'
 
-    e_props = [0, 0.25, 0.5, 0.8, 1]
-    densities = [0, 0.05, 0.1, 0.5, 1]
+    e_props = [0.01, 0.25, 0.5, 0.8, 1]
+    densities = [0.01, 0.05, 0.1, 0.5, 1]
+    dim_rings = [2, 4, 8, 16]
     graph_types = ['er', 'ws']
     ii_connectivities = [0, 1]
     iterations = range(7)
 
     # Nested dictionary to store results
-    pickle_file = 'data/PDMa_training_results.pkl'
+    pickle_file = f'data/{task_type}_training_results.pkl'
     os.makedirs('data', exist_ok=True)
 
     # Check if the file exists
@@ -375,16 +391,17 @@ if __name__ == "__main__":
         data = []
 
     # Iterate over all parameter combinations and iterations
-    for _, e_prop, density, graph_type, ii_conn in product(iterations, e_props[::-1], densities[::-1], graph_types, ii_connectivities):        # Train the network and store the results
+    for _, e_prop, density, dim_ring, graph_type, ii_conn in product(iterations, e_props[::-1], densities[::-1], dim_rings, graph_types, ii_connectivities):        # Train the network and store the results
         # Train the network and store the results
         params = {
             'e_prop': e_prop,
             'density': density,
+            'dim_ring': dim_ring,
             'graph_type': graph_type,
             'ii_conn': ii_conn,
         }
         print(params)
-        results = train_network(e_prop, density, graph_type, ii_conn)
+        results = initialize_train_network(task_type, e_prop, density, dim_ring, graph_type, ii_conn)
         data.append((params, results))
 
         # Save data as a pickle file
