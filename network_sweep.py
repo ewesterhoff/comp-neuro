@@ -352,7 +352,7 @@ e_prop = 0.8
 densities = [0.01, 0.1, 0.5, 0.8, 1]
 graph_type = 'ws'
 ii_connect = 0
-dimensions = [2, 4, 8, 12, 16, 20, 24]
+dimensions = [2, 4, 8, 12, 16, 20, 24, 32]
 network_sizes = [20, 50, 80, 100]
 iters = 1
 
