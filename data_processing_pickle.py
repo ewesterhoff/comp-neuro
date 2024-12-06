@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Load the data
 task = 'PDMa'
-pickle_file = f'{task}_training_results.pkl'
+pickle_file = f'data/{task}_training_results.pkl'
 figname = f'results/{task}_results'
 
 os.makedirs('results', exist_ok=True)
