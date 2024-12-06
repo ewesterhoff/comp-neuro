@@ -346,11 +346,13 @@ def do_run(e_prop=0.8, density = 1, graph_type = 'er',
 # START MAIN CODE
 #e_props = [0, 0.2, 0.4, 0.6, 0.8, 1]
 #densities = [0, 0.2, 0.4, 0.6, 0.8, 1]
-e_props = [0, 0.5, 1]
-densities = [0, 0.5, 1]
-graph_types = ['er', 'ws']
-ii_connections = [0, 1]
-iters = 1
+#graph_types = ['er', 'ws']
+#ii_connections = [0, 1]
+e_props = [0.2, 0.4, 0.6, 0.8, 0.9]
+densities = [0.1, 0.8, 1]
+graph_types = ['ws']
+ii_connections = [1]
+iters = 20
 
 all_data = {}
 
@@ -359,7 +361,7 @@ for i, e_prop in enumerate(e_props):
         for k, graph_type in enumerate(graph_types):
             for m, ii_connect in enumerate(ii_connections):
                 for iter in range(iters):
-                    print(f"Running for e_prop={e_prop:.2f}, density={density:.2f}...")
+                    print(f"Running for e_prop={e_prop:.2f}, density={density:.2f}, iter={iter}...")
 
                     # Perform a single run
                     results = do_run(
@@ -367,10 +369,10 @@ for i, e_prop in enumerate(e_props):
                         density=density,
                         graph_type=graph_type,
                         ii_connectivity=ii_connect,
-                        dim_ring=13,
+                        dim_ring=11,
                         hidden_size=100,
-                        training_steps=1000,
-                        accuracy_trials=500
+                        training_steps=5000,
+                        accuracy_trials=1000
                     )
 
                     # Save results to the dictionary
