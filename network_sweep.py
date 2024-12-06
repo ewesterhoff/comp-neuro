@@ -348,28 +348,28 @@ def do_run(e_prop=0.8, density = 1, graph_type = 'er',
 #densities = [0, 0.2, 0.4, 0.6, 0.8, 1]
 #graph_types = ['er', 'ws']
 #ii_connections = [0, 1]
-# e_prop = 0.8
-# densities = [0.01, 0.1, 0.5, 0.8, 1]
-# graph_type = 'ws'
-# ii_connect = 0
-# dimensions = [2, 4, 8, 12, 16, 20, 24]
-# network_sizes = [20, 50, 80, 100]
-# iters = 1
-
 e_prop = 0.8
-densities = [0.8, 1]
+densities = [0.01, 0.1, 0.5, 0.8, 1]
 graph_type = 'ws'
 ii_connect = 0
-dimensions = [2, 24]
-network_sizes = [50, 100]
+dimensions = [2, 4, 8, 12, 16, 20, 24, 32]
+network_sizes = [20, 50, 80, 100]
 iters = 1
+
+# e_prop = 0.8
+# densities = [0.8, 1]
+# graph_type = 'ws'
+# ii_connect = 0
+# dimensions = [2, 24]
+# network_sizes = [50, 100]
+# iters = 1
 
 all_data = {}
 
-for j, density in enumerate(densities):
-    for k, dim in enumerate(dimensions):
-        for m, network_size in enumerate(network_sizes):
-            print(f"Running for dim={dim}, density={density:.2f}, size={network_size}...")
+for i, density in enumerate(densities):
+    for j, dim in enumerate(dimensions):
+        for k, network_size in enumerate(network_sizes):
+            print(f"Running for density={density:.2f}, dim={dim}, size={network_size}...")
 
             # Perform a single run
             results = do_run(
@@ -384,9 +384,9 @@ for j, density in enumerate(densities):
             )
 
             # Save results to the dictionary
-            key = f"density_{j}_dim_{dim}_neurons_{network_size}"
+            key = f"density_{i}_dim_{dim}_neurons_{network_size}"
             all_data[key] = results
 
 # Save all data to a single .mat file
-savemat("network_sweep_results.mat", all_data)
-print("All results saved to 'network_sweep_results.mat'.")
+savemat("network_sweep_results_full.mat", all_data)
+print("All results saved to 'network_sweep_results_full.mat'.")
