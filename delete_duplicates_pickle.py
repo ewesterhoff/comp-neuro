@@ -4,7 +4,6 @@ import numpy as np
 task = 'PDMa'
 pickle_file = f'data/{task}_training_results.pkl'
 
-
 with open(pickle_file, 'rb') as f:
     data = pickle.load(f)
 
