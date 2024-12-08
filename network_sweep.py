@@ -227,9 +227,10 @@ def do_run(e_prop=0.8, density = 1, graph_type = 'er',
            ii_connectivity = 0, dim_ring = 13, hidden_size = 100,
            training_steps = 5000, accuracy_trials = 5000):
     # Environment
-    task = 'PerceptualDecisionMaking-v0'
+    task = 'MultiSensoryIntegration-v0'
     timing = {'fixation': ('choice', (50,100,200,400)),
             'stimulus': ('choice', (100,200,400,800)),
+            'decision': ('choice', (50,75,100,125)),
             }
 
     kwargs = {'dt': 20, 'timing': timing, 'dim_ring': dim_ring}
@@ -388,5 +389,5 @@ for i, density in enumerate(densities):
             all_data[key] = results
 
 # Save all data to a single .mat file
-savemat("network_sweep_results_full.mat", all_data)
-print("All results saved to 'network_sweep_results_full.mat'.")
+savemat("msi_network_sweep_results_full.mat", all_data)
+print("All results saved to 'msi_network_sweep_results_full.mat'.")
