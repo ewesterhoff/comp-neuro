@@ -369,9 +369,9 @@ def initialize_train_network(task_type, e_prop, density, dim_ring, hidden_size, 
 
 if __name__ == "__main__":
 
-    task_type = 'MSI'
+    task_type = 'PDMa'
 
-    e_props = [0.01, 0.25, 0.5, 0.8, 1]
+    e_props = [0.25, 0.5, 0.8]
     densities = [0.01, 0.05, 0.1, 0.5, 1]
     dim_rings = [2, 4, 8, 16]
     hidden_sizes = [25, 50, 75, 100]
@@ -380,8 +380,8 @@ if __name__ == "__main__":
     iterations = range(7)
 
     # Nested dictionary to store results
-    pickle_file = f'data/{task_type}_training_results.pkl'
-    os.makedirs('data', exist_ok=True)
+    pickle_file = f'temp_data1/{task_type}_training_results.pkl'
+    os.makedirs('temp_data1', exist_ok=True)
 
     # Check if the file exists
     if os.path.exists(pickle_file):
@@ -391,6 +391,7 @@ if __name__ == "__main__":
         data = []
 
     # Iterate over all parameter combinations and iterations
+    counter = 0
     for _, e_prop, density, dim_ring, hidden_size, graph_type, ii_conn in product(iterations, e_props, densities, dim_rings, hidden_sizes, graph_types, ii_connectivities):        # Train the network and store the results
         # Train the network and store the results
         params = {
@@ -406,5 +407,8 @@ if __name__ == "__main__":
         data.append((params, results))
 
         # Save data as a pickle file
-        with open(pickle_file, 'wb') as f:
-            pickle.dump(data, f)
+        counter += 1
+        if counter == 10:
+            coutner = 0
+            with open(pickle_file, 'wb') as f:
+                pickle.dump(data, f)
