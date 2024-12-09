@@ -96,14 +96,15 @@ class EIRecLinear(nn.Module):
         A[:self.e_size, self.e_size:] = mask_ei.astype(int)  # E to I
         A[self.e_size:, :self.e_size] = mask_ie.astype(int)  # I to E
 
-        G = nx.from_numpy_array(A)
+        if A.size == 50:
+            G = nx.from_numpy_array(A)
 
-        # Plot the graph
-        plt.figure(figsize=(10, 8))
-        nx.draw(G, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500, font_size=10)
-        plt.title("Graph Representation of A")
-        # plt.show()
-        plt.close('all')
+            # Plot the graph
+            plt.figure(figsize=(10, 8))
+            nx.draw(G, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500, font_size=10)
+            plt.title("Graph Representation of A")
+            plt.savefig(f'figs/graph_example_graphtype{graph_type}_iiconn{ii_connectivity}_eprop{e_prop}_density{density}.png')
+            plt.close('all')
 
         mask = np.where(A == 0, 0, mask)
         self.mask = torch.tensor(mask, dtype=torch.float32)
@@ -230,7 +231,7 @@ class Net(nn.Module):
 
 
 # Instantiate the network and print information
-def initialize_train_network(task_type, e_prop, density, dim_ring, hidden_size, graph_type, ii_connectivity):
+def initialize_train_network(task_type='PDMa', e_prop=0.8, density=0.1, dim_ring=2, hidden_size=25, graph_type='ws', ii_connectivity=1):
 
     # Environment
     if task_type == 'PDMa':
@@ -356,6 +357,19 @@ def initialize_train_network(task_type, e_prop, density, dim_ring, hidden_size, 
     # Sort by selectivity
     W = W[:, ind_sort][ind_sort, :]
     eigenvalues, eigenvectors = np.linalg.eig(W)
+
+    wlim = np.max(np.abs(W))
+    if e_prop == 0.8 and density == 0.1:
+        plt.figure()
+        plt.imshow(W, cmap='bwr_r', vmin=-wlim, vmax=wlim)
+        plt.colorbar()
+        plt.xlabel('From neurons')
+        plt.ylabel('To neurons')
+        plt.title('Network connectivity')
+        plt.savefig(f'figs/weight_matrix_example_graphtype{graph_type}_iiconn{ii_conn}_dimring{dim_ring}_hiddensize{hidden_size}.png')
+        plt.close('all')
+
+
     
     results = {"W": W,
         "evals": eigenvalues,
@@ -369,10 +383,10 @@ def initialize_train_network(task_type, e_prop, density, dim_ring, hidden_size, 
 
 if __name__ == "__main__":
 
-    task_type = 'PDMa'
+    task_type = 'MSI'
 
-    e_props = [0.25, 0.5, 0.8]
-    densities = [0.01, 0.05, 0.1, 0.5, 1]
+    e_props = [0.8, 0.5, 0.9, 0.1]
+    densities = [0.1, 0.5, 0.05, 1, 0.01]
     dim_rings = [2, 4, 8, 16]
     hidden_sizes = [25, 50, 75, 100]
     graph_types = ['er', 'ws']
@@ -380,8 +394,8 @@ if __name__ == "__main__":
     iterations = range(7)
 
     # Nested dictionary to store results
-    pickle_file = f'temp_data1/{task_type}_training_results.pkl'
-    os.makedirs('temp_data1', exist_ok=True)
+    pickle_file = f'temp_data2/{task_type}_training_results.pkl'
+    os.makedirs('temp_data2', exist_ok=True)
 
     # Check if the file exists
     if os.path.exists(pickle_file):
@@ -403,12 +417,13 @@ if __name__ == "__main__":
             'ii_conn': ii_conn,
         }
         print(params)
-        results = initialize_train_network(task_type, e_prop, density, hidden_size, dim_ring, graph_type, ii_conn)
+        results = initialize_train_network(task_type=task_type, e_prop=e_prop, density=density, hidden_size=hidden_size, dim_ring=dim_ring, graph_type=graph_type, ii_connectivity=ii_conn)
         data.append((params, results))
+        print(results['performance'])
 
         # Save data as a pickle file
         counter += 1
         if counter == 10:
-            coutner = 0
+            counter = 0
             with open(pickle_file, 'wb') as f:
                 pickle.dump(data, f)
