@@ -6,7 +6,7 @@ import matplotlib.cm as cm
 
 
 # Load the data
-task = 'MSI'
+task = 'PDMa'
 pickle_file = f'combined_data/{task}_training_results.pkl'
 figname = f'results/{task}/{task}_results'
 
@@ -72,8 +72,8 @@ for density in densities_list:
             for graph_type in graph_types_list:
                 for dim_ring in dim_ring_list:
                     subset_df = grouped_df[(grouped_df['graph_type'] == graph_type) & (grouped_df['dim_ring'] == dim_ring)]
-                    # if len(subset_df) < 2:
-                    #     continue
+                    if len(subset_df) < 2:
+                        continue
                     num_data_points += len(subset_df)
 
                     # Set the line style and marker based on graph_type
@@ -119,8 +119,8 @@ for hidden_size in hidden_size_list:
             for graph_type in graph_types_list:
                 for dim_ring in dim_ring_list:
                     subset_df = grouped_df[(grouped_df['graph_type'] == graph_type) & (grouped_df['dim_ring'] == dim_ring)]
-                    # if len(subset_df) < 2:
-                    #     continue
+                    if len(subset_df) < 2:
+                        continue
                     num_data_points += len(subset_df)
 
                     # Set the line style and marker based on graph_type
@@ -165,8 +165,8 @@ for density in densities_list:
             for graph_type in graph_types_list:
                 for dim_ring in dim_ring_list:
                     subset_df = grouped_df[(grouped_df['graph_type'] == graph_type) & (grouped_df['dim_ring'] == dim_ring)]
-                    # if len(subset_df) < 2:
-                    #     continue
+                    if len(subset_df) < 2:
+                        continue
                     num_data_points += len(subset_df)
 
                     # Set the line style and marker based on graph_type
@@ -220,8 +220,8 @@ for density in densities_list:
             for ii_conn in ii_conns_list:
                 for dim_ring in dim_ring_list:
                     subset_df = grouped_df[(grouped_df['ii_conn'] == ii_conn) & (grouped_df['dim_ring'] == dim_ring)]
-                    # if len(subset_df) < 2:
-                    #     continue
+                    if len(subset_df) < 2:
+                        continue
                     num_data_points += len(subset_df)
 
                     # Set the line style and marker based on ii_conn
@@ -313,8 +313,8 @@ for density in densities_list:
             for ii_conn in ii_conns_list:
                 for dim_ring in dim_ring_list:
                     subset_df = grouped_df[(grouped_df['ii_conn'] == ii_conn) & (grouped_df['dim_ring'] == dim_ring)]
-                    # if len(subset_df) < 2:
-                    #     continue
+                    if len(subset_df) < 2:
+                        continue
                     num_data_points += len(subset_df)
 
                     # Set the line style and marker based on graph_type
