@@ -5,12 +5,13 @@ import numpy as np
 
 
 # Load the data
-task = 'MSI'
+task = 'PDMa'
 pickle_file = f'combined_data/{task}_training_results.pkl'
 
 pickle_file0 = f'temp_data0/{task}_training_results.pkl'
 pickle_file1 = f'temp_data1/{task}_training_results.pkl'
 pickle_file2 = f'temp_data2/{task}_training_results.pkl'
+pickle_file3 = f'temp_data3/{task}_training_results.pkl'
 
 new_data = []
 if task == 'PDMa':
@@ -107,6 +108,12 @@ if os.path.exists(pickle_file2):
 else:
     data2 = []
 data_list = new_data + data0 + data1 + data2
+if os.path.exists(pickle_file3):
+    with open(pickle_file3, 'rb') as f:
+        data3 = pickle.load(f)
+else:
+    data3 = []
+data_list = new_data + data0 + data1 + data2 + data3
 
 
 for i, data in enumerate(data_list):
@@ -155,5 +162,6 @@ print(f"num deleted: {deleted}")
 for data in data_list:
     print(data[0])
 print(len(data_list))
+os.makedirs('combined_data', exist_ok=True)
 with open(pickle_file, 'wb') as f:
     pickle.dump(data_list, f)

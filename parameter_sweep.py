@@ -1,4 +1,5 @@
 import os
+import time
 import neurogym as ngym
 from neurogym.wrappers.reaction_time import ReactionTime
 import torch
@@ -66,8 +67,8 @@ class EIRecLinear(nn.Module):
         
         if graph_type == 'ws':
             # Generate Watts-Strogatz graph
-            Ge = nx.newman_watts_strogatz_graph(self.e_size, math.ceil(density * self.e_size), 0.05)
-            Gi = nx.newman_watts_strogatz_graph(self.i_size, math.ceil(density * self.i_size), 0.05)
+            Ge = nx.newman_watts_strogatz_graph(self.e_size, math.ceil(density * self.e_size), 0.01)
+            Gi = nx.newman_watts_strogatz_graph(self.i_size, math.ceil(density * self.i_size), 0.01)
 
         elif graph_type == 'er':
             # Generate Erdos-Renyi graph
@@ -96,15 +97,15 @@ class EIRecLinear(nn.Module):
         A[:self.e_size, self.e_size:] = mask_ei.astype(int)  # E to I
         A[self.e_size:, :self.e_size] = mask_ie.astype(int)  # I to E
 
-        if A.size == 50:
-            G = nx.from_numpy_array(A)
+        G = nx.from_numpy_array(A)
 
-            # Plot the graph
-            plt.figure(figsize=(10, 8))
-            nx.draw(G, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500, font_size=10)
-            plt.title("Graph Representation of A")
-            plt.savefig(f'figs/graph_example_graphtype{graph_type}_iiconn{ii_connectivity}_eprop{e_prop}_density{density}.png')
-            plt.close('all')
+        # Plot the graph
+        time_str = time.strftime("%Y%m%d-%H%M%S")
+        plt.figure(figsize=(10, 8))
+        nx.draw(G, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500, font_size=10)
+        plt.title("Graph Representation of A")
+        plt.savefig(f'figs/graph_example_graphtype{graph_type}_iiconn{ii_connectivity}_eprop{e_prop}_density{density}_{time_str}.png')
+        plt.close('all')
 
         mask = np.where(A == 0, 0, mask)
         self.mask = torch.tensor(mask, dtype=torch.float32)
@@ -282,7 +283,7 @@ def initialize_train_network(task_type='PDMa', e_prop=0.8, density=0.1, dim_ring
     running_loss = 0
     running_acc = 0
     print_step = 200
-    for i in range(5000):
+    for i in range(500):
         inputs, labels = dataset()
         inputs = torch.from_numpy(inputs).type(torch.float)
         labels = torch.from_numpy(labels.flatten()).type(torch.long)
@@ -299,7 +300,7 @@ def initialize_train_network(task_type='PDMa', e_prop=0.8, density=0.1, dim_ring
         running_loss += loss.item()
         if i % print_step == (print_step - 1):
             running_loss /= print_step
-            # print('Step {}, Loss {:0.4f}'.format(i+1, running_loss))
+            print('Step {}, Loss {:0.4f}'.format(i+1, running_loss))
             running_loss = 0
 
     env.reset(no_step=True)
@@ -360,13 +361,14 @@ def initialize_train_network(task_type='PDMa', e_prop=0.8, density=0.1, dim_ring
 
     wlim = np.max(np.abs(W))
     if e_prop == 0.8 and density == 0.1:
+        time_str = time.strftime("%Y%m%d-%H%M%S")
         plt.figure()
         plt.imshow(W, cmap='bwr_r', vmin=-wlim, vmax=wlim)
         plt.colorbar()
         plt.xlabel('From neurons')
         plt.ylabel('To neurons')
         plt.title('Network connectivity')
-        plt.savefig(f'figs/weight_matrix_example_graphtype{graph_type}_iiconn{ii_conn}_dimring{dim_ring}_hiddensize{hidden_size}.png')
+        plt.savefig(f'figs/weight_matrix_example_graphtype{graph_type}_iiconn{ii_conn}_dimring{dim_ring}_hiddensize{hidden_size}_{time_str}.png')
         plt.close('all')
 
 
@@ -383,7 +385,7 @@ def initialize_train_network(task_type='PDMa', e_prop=0.8, density=0.1, dim_ring
 
 if __name__ == "__main__":
 
-    task_type = 'MSI'
+    task_type = 'PDMa'
 
     e_props = [0.8, 0.5, 0.9, 0.1]
     densities = [0.1, 0.5, 0.05, 1, 0.01]
@@ -394,8 +396,8 @@ if __name__ == "__main__":
     iterations = range(7)
 
     # Nested dictionary to store results
-    pickle_file = f'temp_data2/{task_type}_training_results.pkl'
-    os.makedirs('temp_data2', exist_ok=True)
+    pickle_file = f'temp_data0/{task_type}_training_results.pkl'
+    os.makedirs('temp_data0', exist_ok=True)
 
     # Check if the file exists
     if os.path.exists(pickle_file):
@@ -421,9 +423,6 @@ if __name__ == "__main__":
         data.append((params, results))
         print(results['performance'])
 
-        # Save data as a pickle file
-        counter += 1
-        if counter == 10:
-            counter = 0
-            with open(pickle_file, 'wb') as f:
-                pickle.dump(data, f)
+        
+        # with open(pickle_file, 'wb') as f:
+        #     pickle.dump(data, f)
