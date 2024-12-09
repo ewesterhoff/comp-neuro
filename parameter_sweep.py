@@ -96,14 +96,15 @@ class EIRecLinear(nn.Module):
         A[:self.e_size, self.e_size:] = mask_ei.astype(int)  # E to I
         A[self.e_size:, :self.e_size] = mask_ie.astype(int)  # I to E
 
-        # G = nx.from_numpy_array(A)
+        if A.size == 50:
+            G = nx.from_numpy_array(A)
 
-        # # Plot the graph
-        # plt.figure(figsize=(10, 8))
-        # nx.draw(G, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500, font_size=10)
-        # plt.title("Graph Representation of A")
-        # plt.savefig(f'figs/graph_example_graphtype{graph_type}_iiconn{ii_connectivity}.png')
-        # plt.close('all')
+            # Plot the graph
+            plt.figure(figsize=(10, 8))
+            nx.draw(G, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500, font_size=10)
+            plt.title("Graph Representation of A")
+            plt.savefig(f'figs/graph_example_graphtype{graph_type}_iiconn{ii_connectivity}_eprop{e_prop}_density{density}.png')
+            plt.close('all')
 
         mask = np.where(A == 0, 0, mask)
         self.mask = torch.tensor(mask, dtype=torch.float32)
@@ -230,7 +231,7 @@ class Net(nn.Module):
 
 
 # Instantiate the network and print information
-def initialize_train_network(task_type='PDMa', e_prop='0.8', density='0.1', dim_ring=2, hidden_size=25, graph_type='ws', ii_connectivity=1):
+def initialize_train_network(task_type='PDMa', e_prop=0.8, density=0.1, dim_ring=2, hidden_size=25, graph_type='ws', ii_connectivity=1):
 
     # Environment
     if task_type == 'PDMa':
@@ -358,14 +359,15 @@ def initialize_train_network(task_type='PDMa', e_prop='0.8', density='0.1', dim_
     eigenvalues, eigenvectors = np.linalg.eig(W)
 
     wlim = np.max(np.abs(W))
-    # plt.figure()
-    # plt.imshow(W, cmap='bwr_r', vmin=-wlim, vmax=wlim)
-    # plt.colorbar()
-    # plt.xlabel('From neurons')
-    # plt.ylabel('To neurons')
-    # plt.title('Network connectivity')
-    # plt.savefig(f'figs/weight_matrix_example_graphtype{graph_type}_iiconn{ii_conn}.png')
-    # plt.close('all')
+    if e_prop == 0.8 and density == 0.1:
+        plt.figure()
+        plt.imshow(W, cmap='bwr_r', vmin=-wlim, vmax=wlim)
+        plt.colorbar()
+        plt.xlabel('From neurons')
+        plt.ylabel('To neurons')
+        plt.title('Network connectivity')
+        plt.savefig(f'figs/weight_matrix_example_graphtype{graph_type}_iiconn{ii_conn}_dimring{dim_ring}_hiddensize{hidden_size}.png')
+        plt.close('all')
 
 
     
